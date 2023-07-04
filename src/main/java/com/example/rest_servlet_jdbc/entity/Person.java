@@ -1,6 +1,4 @@
-package entity;
-
-import entity.Entity;
+package com.example.rest_servlet_jdbc.entity;
 
 import java.util.Objects;
 

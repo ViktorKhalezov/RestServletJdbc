@@ -1,4 +1,4 @@
-package entity;
+package com.example.rest_servlet_jdbc.entity;
 
 import java.util.Objects;
 
@@ -35,6 +35,3 @@ public class Entity {
         return Objects.hash(id);
     }
 }
-
-// Ссылка по пулам подключений jdbc:
-// https://www.baeldung.com/java-connection-pooling

@@ -15,7 +15,7 @@ CREATE TABLE teacher (
 CREATE TABLE course (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    teacher_id BIGINT NOT NULL,
+    teacher_id BIGINT,
     FOREIGN KEY(teacher_id) REFERENCES teacher(id)
 );
 
