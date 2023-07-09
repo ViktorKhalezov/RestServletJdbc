@@ -3,6 +3,8 @@ package com.example.rest_servlet_jdbc.dao;
 import com.example.rest_servlet_jdbc.entity.Course;
 import com.example.rest_servlet_jdbc.entity.Student;
 import com.example.rest_servlet_jdbc.entity.Teacher;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,20 +37,20 @@ public class CourseDaoJDBC implements CourseDao {
             "LEFT JOIN student_course sc ON c.id = sc.course_id LEFT JOIN student s ON sc.student_id = s.id WHERE title = ?";
     private final String CLEAR_STUDENT = "DELETE FROM student_course WHERE student_id = ? AND course_id = ?";
 
-    private final ConnectionPool connectionPool;
+    private final DataSource dataSource;
 
 
-    public CourseDaoJDBC(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public CourseDaoJDBC(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
 
     @Override
     public Optional<Course> findByTitle(String title) throws SQLException {
         Course course = null;
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+
+        try (Connection connection = dataSource.getConnection()) {
+
 
         try(PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_TITLE)) {
             preparedStatement.setString(1, title);
@@ -85,8 +87,6 @@ public class CourseDaoJDBC implements CourseDao {
                 }
             }
         }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
 
         return Optional.ofNullable(course);
@@ -94,9 +94,9 @@ public class CourseDaoJDBC implements CourseDao {
 
     @Override
     public Course save(Course course) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+
+        try (Connection connection = dataSource.getConnection()) {
+
             if(course.getId() == null) {
                 try(PreparedStatement insertStatement = connection.prepareStatement(INSERT)) {
                     insertStatement.setString(1, course.getTitle());
@@ -161,8 +161,6 @@ public class CourseDaoJDBC implements CourseDao {
                     }
                 }
             }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return course;
     }
@@ -170,9 +168,8 @@ public class CourseDaoJDBC implements CourseDao {
     @Override
     public Optional<Course> findById(Long id) throws SQLException {
         Course course = null;
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+
+        try (Connection connection = dataSource.getConnection()) {
 
         try(PreparedStatement preparedStatement = connection.prepareStatement(GET)) {
             preparedStatement.setLong(1, id);
@@ -210,8 +207,6 @@ public class CourseDaoJDBC implements CourseDao {
                 }
             }
         }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return Optional.ofNullable(course);
     }
@@ -220,9 +215,7 @@ public class CourseDaoJDBC implements CourseDao {
     public List<Course> findAll() throws SQLException {
        List<Course> courses = new ArrayList<>();
 
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
 
             try(PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL)) {
 
@@ -264,17 +257,15 @@ public class CourseDaoJDBC implements CourseDao {
                     courses = courseMap.values().stream().collect(Collectors.toList());
                 }
             }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return courses;
     }
 
     @Override
     public void deleteById(Long id) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+
+        try (Connection connection = dataSource.getConnection()) {
+
             try (PreparedStatement deleteStudentStatement = connection.prepareStatement(DELETE_STUDENTS)) {
                 deleteStudentStatement.setLong(1, id);
                 deleteStudentStatement.execute();
@@ -283,8 +274,6 @@ public class CourseDaoJDBC implements CourseDao {
                 deleteStatement.setLong(1, id);
                 deleteStatement.execute();
         }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
     }
 

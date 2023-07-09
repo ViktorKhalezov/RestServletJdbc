@@ -1,19 +1,19 @@
-insert into student (firstname, lastname, age)
-values ('Ivan', 'Ivanov', 20),
+INSERT INTO student (firstname, lastname, age)
+VALUES ('Ivan', 'Ivanov', 20),
        ('Fedor', 'Petrov', 19),
        ('Alexey', 'Popov', 25);
 
-insert into teacher (firstname, lastname, faculty)
-values ('Pavel', 'Pavlov', 'Technical'),
+INSERT INTO teacher (firstname, lastname, faculty)
+VALUES ('Pavel', 'Pavlov', 'Technical'),
        ('Dmitriy', 'Sergeev', 'Business');
 
-insert into course (title, teacher_id)
-values ('Programming', 1),
+INSERT INTO course (title, teacher_id)
+VALUES ('Programming', 1),
        ('Mathematics', 1),
        ('Marketing', 2);
 
-insert into student_course (student_id, course_id)
-values (1, 1),
+INSERT INTO student_course (student_id, course_id)
+VALUES (1, 1),
        (1, 2),
        (2, 3),
        (3, 1),

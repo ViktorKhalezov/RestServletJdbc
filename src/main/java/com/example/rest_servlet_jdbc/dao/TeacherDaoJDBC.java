@@ -2,6 +2,8 @@ package com.example.rest_servlet_jdbc.dao;
 
 import com.example.rest_servlet_jdbc.entity.Course;
 import com.example.rest_servlet_jdbc.entity.Teacher;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,20 +28,18 @@ public class TeacherDaoJDBC implements TeacherDao {
 
     private final String UPDATE_COURSES = "UPDATE course SET teacher_id = ? WHERE title = ?";
 
-    private final ConnectionPool connectionPool;
+    private final DataSource dataSource;
 
 
-    public TeacherDaoJDBC(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public TeacherDaoJDBC(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
 
     @Override
     public Optional<Teacher> findByFullName(String firstname, String lastname) throws SQLException {
         Teacher teacher = null;
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_FULLNAME)) {
             preparedStatement.setString(1, firstname);
@@ -81,17 +81,13 @@ public class TeacherDaoJDBC implements TeacherDao {
 
             }
         }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return Optional.ofNullable(teacher);
     }
 
     @Override
     public Teacher save(Teacher teacher) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
 
             if (teacher.getId() == null) {
                 try (PreparedStatement insertStatement = connection.prepareStatement(INSERT)) {
@@ -155,8 +151,6 @@ public class TeacherDaoJDBC implements TeacherDao {
                     }
                 }
             }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return teacher;
     }
@@ -165,9 +159,7 @@ public class TeacherDaoJDBC implements TeacherDao {
     public Optional<Teacher> findById(Long id) throws SQLException {
         Teacher teacher = null;
 
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET)) {
             preparedStatement.setLong(1, id);
@@ -204,8 +196,6 @@ public class TeacherDaoJDBC implements TeacherDao {
 
             }
         }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return Optional.ofNullable(teacher);
     }
@@ -214,9 +204,7 @@ public class TeacherDaoJDBC implements TeacherDao {
     public List<Teacher> findAll() throws SQLException {
         List<Teacher> teachers = null;
 
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL)) {
 
@@ -248,17 +236,15 @@ public class TeacherDaoJDBC implements TeacherDao {
                teachers = teacherMap.values().stream().collect(Collectors.toList());
             }
         }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
         return teachers;
     }
 
     @Override
     public void deleteById(Long id) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+
+        try (Connection connection = dataSource.getConnection()) {
+
             try (PreparedStatement deleteCourseStatement = connection.prepareStatement(DELETE_COURSES)) {
                 deleteCourseStatement.setLong(1, id);
                 deleteCourseStatement.execute();
@@ -268,8 +254,6 @@ public class TeacherDaoJDBC implements TeacherDao {
                 deleteStatement.setLong(1, id);
                 deleteStatement.execute();
             }
-        } finally {
-            connectionPool.releaseConnection(connection);
         }
     }
 
