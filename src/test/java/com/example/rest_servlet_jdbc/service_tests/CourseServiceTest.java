@@ -60,6 +60,33 @@ public class CourseServiceTest {
     }
 
     @Test
+    void handlePostRequest() throws SQLException, JsonProcessingException {
+        String newCourse =    "{        \"title\": \"DevOps\",        \"students\": [            \"Fedor Petrov\",	\"Ivan Ivanov\"," +
+                "            \"Alexey Popov\"        ],        \"teacher\": \"Dmitriy Sergeev\"    }";
+
+        courseService.handlePostRequest(newCourse);
+
+        List<CourseDto> courses = objectMapper.readValue(courseService.handleGetRequest("/").get(), List.class);
+        CourseDto newCourseDto = objectMapper.readValue(courseService.handleGetRequest("/4").get(), CourseDto.class);
+
+        Assertions.assertEquals(4, courses.size());
+        Assertions.assertEquals("DevOps", newCourseDto.getTitle());
+    }
+
+    @Test
+    void handlePutRequest() throws SQLException, JsonProcessingException {
+        String updatedCourse =     "{        \"id\": 3,        \"title\": \"Management\",        " +
+                "\"students\": [ \"Ivan Ivanov\" ],        \"teacher\": \"Pavel Pavlov\"    }";
+
+        courseService.handlePutRequest("/3", updatedCourse);
+
+        CourseDto updatedCourseDto = objectMapper.readValue(courseService.handleGetRequest("/3").get(), CourseDto.class);
+
+        Assertions.assertEquals("Management", updatedCourseDto.getTitle());
+    }
+
+
+    @Test
     void handleDeleteRequest() throws SQLException, JsonProcessingException {
         courseService.handleDeleteRequest("/1");
 

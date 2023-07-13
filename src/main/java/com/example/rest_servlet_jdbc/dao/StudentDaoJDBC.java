@@ -15,7 +15,7 @@ public class StudentDaoJDBC implements StudentDao {
 
 
     private final String INSERT = "INSERT INTO student (firstname, lastname, age) VALUES(?, ?, ?)";
-    private final String INSERT_COURSES = "INSERT INTO student_course (student_id, course_id) VALUES(?, ?)";
+    private final String INSERT_COURSE = "INSERT INTO student_course (student_id, course_id) VALUES(?, ?)";
     private final String UPDATE = "UPDATE student SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
     private final String DELETE = "DELETE FROM student WHERE id = ?";
     private final String DELETE_COURSES = "DELETE FROM student_course WHERE student_id = ?";
@@ -108,7 +108,7 @@ public class StudentDaoJDBC implements StudentDao {
                     Student studentFromDb = findByFullName(student.getFirstname(), student.getLastname()).get();
 
                     for(Course course : courses) {
-                        try(PreparedStatement insertCourseStatement = connection.prepareStatement(INSERT_COURSES)) {
+                        try(PreparedStatement insertCourseStatement = connection.prepareStatement(INSERT_COURSE)) {
                             insertCourseStatement.setLong(1, studentFromDb.getId());
                             insertCourseStatement.setLong(2, course.getId());
                             insertCourseStatement.execute();
@@ -131,7 +131,7 @@ public class StudentDaoJDBC implements StudentDao {
 
                     for(Course course : courses) {
                         if(!coursesFromDb.contains(course)) {
-                            try(PreparedStatement updateCourseStatement = connection.prepareStatement(INSERT_COURSES)) {
+                            try(PreparedStatement updateCourseStatement = connection.prepareStatement(INSERT_COURSE)) {
                                 updateCourseStatement.setLong(1, student.getId());
                                 updateCourseStatement.setLong(2, course.getId());
                                 updateCourseStatement.execute();

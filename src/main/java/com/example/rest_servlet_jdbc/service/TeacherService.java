@@ -6,7 +6,6 @@ import com.example.rest_servlet_jdbc.dao.TeacherDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.rest_servlet_jdbc.dto.TeacherDto;
 import com.example.rest_servlet_jdbc.mapper.TeacherMapper;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -70,22 +69,19 @@ public class TeacherService {
             return Optional.empty();
     }
 
-        public void handlePostRequest(HttpServletRequest req) throws SQLException {
-            String bodyParams = null;
+        public void handlePostRequest(String bodyParams) throws SQLException {
             try {
-                bodyParams = req.getReader().lines().collect(Collectors.joining());
                 TeacherDto teacherDto = objectMapper.readValue(bodyParams, TeacherDto.class);
                 teacherDao.save(teacherMapper.toTeacher(teacherDto));
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
             }
         }
 
-        public void handlePutRequest(String requestPath, HttpServletRequest req) throws SQLException {
+        public void handlePutRequest(String requestPath, String bodyParams) throws SQLException {
             String[] pathArray = requestPath.split("/");
             Long id = Long.parseLong(pathArray[1]);
             try {
-                String bodyParams = req.getReader().lines().collect(Collectors.joining());
                 TeacherDto teacherDto = objectMapper.readValue(bodyParams, TeacherDto.class);
                 teacherDto.setId(id);
                 teacherDao.save(teacherMapper.toTeacher(teacherDto));

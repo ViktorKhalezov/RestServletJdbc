@@ -1,6 +1,7 @@
 package com.example.rest_servlet_jdbc.service_tests;
 
 import com.example.rest_servlet_jdbc.dao.*;
+import com.example.rest_servlet_jdbc.dto.CourseDto;
 import com.example.rest_servlet_jdbc.dto.StudentDto;
 import com.example.rest_servlet_jdbc.mapper.StudentMapper;
 import com.example.rest_servlet_jdbc.service.StudentService;
@@ -53,6 +54,37 @@ public class StudentServiceTest {
 
         Assertions.assertEquals(3, students.size());
         Assertions.assertEquals(3L, studentDto.getId());
+    }
+
+    @Test
+    void handlePostRequest() throws SQLException, JsonProcessingException {
+        String newStudent = "{        \"firstname\": \"Sergey\",        \"lastname\": \"Rollback\",        " +
+                "\"age\": 75,        \"courses\": [            \"Programming\"        ]    }";
+
+        studentService.handlePostRequest(newStudent);
+
+        List<StudentDto> students = objectMapper.readValue(studentService.handleGetRequest("/").get(), List.class);
+        StudentDto studentDto = objectMapper.readValue(studentService.handleGetRequest("/4").get(), StudentDto.class);
+
+        Assertions.assertEquals(4, students.size());
+        Assertions.assertEquals("Sergey", studentDto.getFirstname());
+        Assertions.assertEquals("Rollback", studentDto.getLastname());
+
+    }
+
+    @Test
+    void handlePutRequest() throws SQLException, JsonProcessingException {
+        String updatedStudent = "{        \"id\": 2,        \"firstname\": \"Alesha\",        \"lastname\": \"Popovich\",        " +
+                "\"age\": 25,        \"courses\": [            \"Mathematics\"        ]    }";
+
+        studentService.handlePutRequest("/2", updatedStudent);
+
+        StudentDto studentDto = objectMapper.readValue(studentService.handleGetRequest("/2").get(), StudentDto.class);
+
+        Assertions.assertEquals("Alesha", studentDto.getFirstname());
+        Assertions.assertEquals("Popovich", studentDto.getLastname());
+
+
     }
 
     @Test

@@ -26,7 +26,7 @@ public class CourseDaoJDBC implements CourseDao {
             "LEFT JOIN student_course sc ON c.id = sc.course_id LEFT JOIN student s ON sc.student_id = s.id";
 
     private final String INSERT = "INSERT INTO course (title, teacher_id) VALUES (?, ?)";
-    private final String INSERT_STUDENTS = "INSERT INTO student_course (student_id, course_id) VALUES (?, ?)";
+    private final String INSERT_STUDENT = "INSERT INTO student_course (student_id, course_id) VALUES (?, ?)";
     private final String UPDATE = "UPDATE course SET title = ?, teacher_id = ? WHERE id = ?";
     private final String DELETE = "DELETE FROM course WHERE id = ?";
     private final String DELETE_STUDENTS = "DELETE FROM student_course WHERE course_id = ?";
@@ -110,7 +110,7 @@ public class CourseDaoJDBC implements CourseDao {
                         Course courseFromDb = findByTitle(course.getTitle()).get();
 
                         for(Student student : students) {
-                            try(PreparedStatement insertStudentStatement = connection.prepareStatement(INSERT_STUDENTS)) {
+                            try(PreparedStatement insertStudentStatement = connection.prepareStatement(INSERT_STUDENT)) {
                                 insertStudentStatement.setLong(1, student.getId());
                                 insertStudentStatement.setLong(2, courseFromDb.getId());
                                 insertStudentStatement.execute();
@@ -133,7 +133,7 @@ public class CourseDaoJDBC implements CourseDao {
 
                     for(Student student : students) {
                         if(!studentsFromDb.contains(student)) {
-                            try(PreparedStatement insertStudentStatement = connection.prepareStatement(INSERT_STUDENTS)) {
+                            try(PreparedStatement insertStudentStatement = connection.prepareStatement(INSERT_STUDENT)) {
                                 insertStudentStatement.setLong(1, student.getId());
                                 insertStudentStatement.setLong(2, course.getId());
                                 insertStudentStatement.execute();

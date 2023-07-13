@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 
 @WebServlet(urlPatterns = "/teacher/*")
@@ -49,9 +50,9 @@ public class TeacherServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         try {
-            teacherService.handlePostRequest(req);
+            String bodyParams = req.getReader().lines().collect(Collectors.joining());
+            teacherService.handlePostRequest(bodyParams);
             resp.setStatus(201);
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().write(ResponseMessage.POST_SUCCESS.getMessage());
@@ -69,7 +70,8 @@ public class TeacherServlet extends HttpServlet {
 
         try {
             String requestPath = req.getPathInfo();
-            teacherService.handlePutRequest(requestPath, req);
+            String bodyParams = req.getReader().lines().collect(Collectors.joining());
+            teacherService.handlePutRequest(requestPath, bodyParams);
             resp.setStatus(200);
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().write(ResponseMessage.PUT_SUCCESS.getMessage());

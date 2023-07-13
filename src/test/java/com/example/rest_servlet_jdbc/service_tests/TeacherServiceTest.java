@@ -55,6 +55,33 @@ public class TeacherServiceTest {
         Assertions.assertEquals(1L, teacherDto.getId());
     }
 
+    @Test
+    void handlePostRequest() throws SQLException, JsonProcessingException {
+        String newTeacher = "{    \"firstname\": \"Artem\",    \"lastname\": \"Nikitin\",    \"faculty\": \"Technical\",  " +
+                "  \"courses\": [        \"Programming\",	\"Mathmatics\",	\"Marketing\"    ]}";
+
+        teacherService.handlePostRequest(newTeacher);
+
+        List<TeacherDto> teachers = objectMapper.readValue(teacherService.handleGetRequest("/").get(), List.class);
+        TeacherDto teacherDto = objectMapper.readValue(teacherService.handleGetRequest("/3").get(), TeacherDto.class);
+
+        Assertions.assertEquals(3, teachers.size());
+        Assertions.assertEquals("Artem", teacherDto.getFirstname());
+        Assertions.assertEquals("Nikitin", teacherDto.getLastname());
+    }
+
+    @Test
+    void handlePutRequest() throws SQLException, JsonProcessingException {
+        String updatedTeacher = "{    \"id\": 2,    \"firstname\": \"Karl\",    \"lastname\": \"Brown\",    " +
+                "\"faculty\": \"Technical\",    \"courses\": [        \"Programming\",	\"Mathmatics\"    ]}";
+
+        teacherService.handlePutRequest("/2", updatedTeacher);
+
+        TeacherDto teacherDto = objectMapper.readValue(teacherService.handleGetRequest("/2").get(), TeacherDto.class);
+
+        Assertions.assertEquals("Karl", teacherDto.getFirstname());
+        Assertions.assertEquals("Brown", teacherDto.getLastname());
+    }
 
     @Test
     void handleDeleteRequest() throws SQLException, JsonProcessingException {

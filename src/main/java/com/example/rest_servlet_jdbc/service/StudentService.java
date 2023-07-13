@@ -6,8 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.rest_servlet_jdbc.dao.StudentDao;
 import com.example.rest_servlet_jdbc.mapper.StudentMapper;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -68,27 +66,24 @@ public class StudentService {
         return Optional.empty();
     }
 
-    public void handlePostRequest(HttpServletRequest req) throws SQLException {
-        String bodyParams = null;
+    public void handlePostRequest(String bodyParams) throws SQLException {
         try {
-            bodyParams = req.getReader().lines().collect(Collectors.joining());
             StudentDto studentDto = objectMapper.readValue(bodyParams, StudentDto.class);
             studentDao.save(studentMapper.toStudent(studentDto));
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 
-    public void handlePutRequest(String requestPath, HttpServletRequest req) throws SQLException {
+    public void handlePutRequest(String requestPath, String bodyParams) throws SQLException {
         String[] pathArray = requestPath.split("/");
         Long id = Long.parseLong(pathArray[1]);
         try {
-            String bodyParams = req.getReader().lines().collect(Collectors.joining());
             StudentDto studentDto = objectMapper.readValue(bodyParams, StudentDto.class);
             studentDto.setId(id);
             studentDao.save(studentMapper.toStudent(studentDto));
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 

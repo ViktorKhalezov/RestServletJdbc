@@ -7,16 +7,12 @@ import com.example.rest_servlet_jdbc.entity.Student;
 import com.example.rest_servlet_jdbc.entity.Teacher;
 import com.example.rest_servlet_jdbc.mapper.CourseMapper;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(MockitoExtension.class)
 public class CourseMapperTest {
 
 
